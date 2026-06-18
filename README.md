@@ -331,13 +331,6 @@ npm run build
 6. Add env vars: `MONGODB_URI`, `NODE_ENV=production`
 
 ---
-
-## Screenshots
-
-*(Add screenshots of Dashboard, Parts table, Builder, and Configurations grid here)*
-
----
-
 ## Contact
 
 Built by Aditya Thakur for Hero Cycles technical assessment.
