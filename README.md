@@ -340,4 +340,4 @@ npm run build
 
 ## Contact
 
-Built by [Your Name] for Hero Cycles technical assessment.
+Built by Aditya Thakur for Hero Cycles technical assessment.
