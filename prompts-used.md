@@ -1,110 +1,49 @@
 # Prompts Used
 
-This file documents every AI prompt used during the development of this project, as required by the assignment.
+Logging these as required by the assignment. Used Claude and Copilot during the build.
 
 ---
 
-## 1. Problem Analysis & Breakdown
+**Breaking down the problem**
 
-**Prompt:**
-> "I'm a fresher engineer joining Hero Cycles. My manager gave me this brief: 'We sell thousands of cycle configurations with different frames, gear sets, and tyre types. Part costs change every few months. Everything is on Excel. We need a pricing engine salespersons can use to manage cycle configs and parts, and instantly get the total price broken down by component.' Help me break this down as a product: stakeholders, requirements, key questions, and assumptions."
+Asked Claude: *"given this brief about a cycle pricing engine replacing excel, help me think through what the actual requirements are — who uses it, what they need, edge cases"*
 
-**Used for:** Writing Part 1 of the assignment (Problem Breakdown in README)
-
----
-
-## 2. MongoDB Schema Design
-
-**Prompt:**
-> "Design a MongoDB schema for a bicycle pricing engine. I need two collections: Parts (with price history tracking — every time a price changes, record the old price, when it changed, and a note) and Configurations (which should snapshot part prices at creation time so a config is not affected by future price changes). Show me the Mongoose model code."
-
-**Used for:** Creating `models/Part.js` and `models/Configuration.js`
+Helped me think through the price snapshot question specifically — whether old configs should update when prices change. Decided snapshot was the right call.
 
 ---
 
-## 3. Express API Structure
+**MongoDB schema**
 
-**Prompt:**
-> "Create Express.js REST API routes for a bicycle parts management system. I need:
-> - GET /api/parts (with optional category and isActive filter)
-> - POST /api/parts
-> - PUT /api/parts/:id (should auto-log price changes to history)
-> - DELETE /api/parts/:id
-> - GET /api/parts/:id/price-history
-> Use async/await, proper error handling, and HTTP status codes."
+Me: *"i want to track price history in mongoose — every time currentPrice changes i want to log the old price + timestamp. pre-save hook?"*
 
-**Used for:** `routes/parts.js`
+Got the pre-save hook approach. Had to tweak it because the initial version was double-logging on the first save.
 
 ---
 
-## 4. Configuration Builder UI
+**The recalculate endpoint**
 
-**Prompt:**
-> "Generate a React component for a cycle configuration builder. It should:
-> - Show a list of parts as checkboxes
-> - Update the total price live as user selects/deselects parts
-> - Show a price breakdown sidebar with subtotal + GST (18%)
-> - Have a form to name the configuration and pick target audience
-> - On submit, POST to /api/configurations with selected part IDs
-> Use only React hooks (useState, useEffect), no external state library."
+Me: *"write an express route that takes a saved config, fetches current prices for all its parts, updates priceAtTime on each part in the config, and returns old total + new total + diff"*
 
-**Used for:** `pages/ConfigurationBuilder.js`
+Worked mostly first try, just cleaned up the variable naming.
 
 ---
 
-## 5. Price History Feature
+**React config builder**
 
-**Prompt:**
-> "How do I track price history in Mongoose? I want: whenever a part's price is updated, the old price and timestamp are saved in a priceHistory array embedded in the same document. The current price should always be the latest one. Show me the Mongoose pre-save hook approach."
+Me: *"react component — left side is a checklist of parts, right side shows live price breakdown as you select. state is just selectedIds array."*
 
-**Used for:** Price history logic in `models/Part.js`
-
----
-
-## 6. Unit Tests
-
-**Prompt:**
-> "Write Jest unit tests for a bicycle pricing engine. Test the core pricing logic as pure functions:
-> - calculateTotal: sum of priceAtTime across selected parts
-> - price history tracking
-> - GST calculation at 18%
-> - input validation (empty name, negative price, missing category)
-> Do not mock MongoDB — test only the pure business logic."
-
-**Used for:** `pricing.test.js`
+Generated the bones of it. Rewrote the GST section and the way parts filter by category.
 
 ---
 
-## 7. Recalculate Feature
+**Unit tests**
 
-**Prompt:**
-> "I have a saved cycle configuration that snapshotted part prices at creation. Now part prices have changed. Write an Express endpoint POST /api/configurations/:id/recalculate that fetches the latest prices for all parts in the config, updates the priceAtTime values, recalculates the total, and returns the old total, new total, and difference."
+Me: *"write jest tests for the pure pricing logic — total calculation, gst, validation — without hitting the db"*
 
-**Used for:** `routes/configurations.js` — recalculate endpoint
-
----
-
-## 8. UI Design System
-
-**Prompt:**
-> "I'm building a dark-themed internal tool for Hero Cycles — a bicycle manufacturer. Design a CSS design system: color palette (background, surface, border colors, and accent colors for price/money display and brand), typography (distinctive font pairing — one display/header face and one body face), and component classes for cards, buttons, tables, badges by category, modals, and form inputs. Make it feel industrial and professional, not generic."
-
-**Used for:** `index.css`
+All 13 tests passing.
 
 ---
 
-## 9. README
+**CSS / design**
 
-**Prompt:**
-> "Write a professional README for a full-stack bicycle pricing engine built with React, Node.js/Express, and MongoDB. Include: project overview, features list, tech stack, local setup instructions (with MongoDB Atlas setup), environment variables, API documentation, database schema, assumptions made, questions asked during design, and deployment instructions for Vercel (frontend) and Render (backend)."
-
-**Used for:** `README.md`
-
----
-
-## 10. Dashboard Stats
-
-**Prompt:**
-> "Write a MongoDB aggregation query that returns: total parts count, active parts count, total configurations count, category-wise part count with average price, and the top 5 most expensive configurations. Use Promise.all for parallel queries."
-
-**Used for:** `routes/dashboard.js`
+Wrote most of the CSS myself, used Copilot for some of the repetitive badge color stuff.
