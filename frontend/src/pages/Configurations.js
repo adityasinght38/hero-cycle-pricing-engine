@@ -137,9 +137,6 @@ export default function Configurations() {
   const filtered = configs.filter(c =>
     !search || c.cycleName.toLowerCase().includes(search.toLowerCase())
   );
-
-  const statusColor = { Active: 'var(--hero-green)', Draft: 'var(--text-muted)', Archived: 'var(--text-muted)' };
-
   return (
     <>
       {selected && (
